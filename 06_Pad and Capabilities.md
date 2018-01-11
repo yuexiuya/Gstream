@@ -353,5 +353,40 @@ link_elements_with_filter (GstElement *element1, GstElement *element2)
   return link_ok;
 }
 
+```
+
+- 当需要过滤的媒体类型(video/x-raw)不仅仅只有一个时候，可以有一种更加方便，更加格式化的方式设置过滤器
 
 ```
+static gboolean
+link_elements_with_filter (GstElement *element1, GstElement *element2)
+{
+  gboolean link_ok;
+  GstCaps *caps;
+
+  caps = gst_caps_new_full (
+      gst_structure_new ("video/x-raw",
+             "width", G_TYPE_INT, 384,
+             "height", G_TYPE_INT, 288,
+             "framerate", GST_TYPE_FRACTION, 25, 1,
+             NULL),
+      gst_structure_new ("video/x-bayer",
+             "width", G_TYPE_INT, 384,
+             "height", G_TYPE_INT, 288,
+             "framerate", GST_TYPE_FRACTION, 25, 1,
+             NULL),
+      NULL);
+
+  link_ok = gst_element_link_filtered (element1, element2, caps);
+  gst_caps_unref (caps);
+
+  if (!link_ok) {
+    g_warning ("Failed to link element1 and element2!");
+  }
+
+  return link_ok;
+}
+```
+
+
+### 2.2 Capabilities 的作用

@@ -239,6 +239,26 @@ gst_element_link_pads (GstElement *src,
 //如果可以连接返回TRUE
 ```
 
+## gst_element_link_filtered()
+
+```
+gboolean
+gst_element_link_filtered (GstElement *src,
+                           GstElement *dest,
+                           GstCaps *filter);
+//连接两个元素,filter作为过滤器
+//link方向必须是从 src -> dest， 反方向并不会被尝试；
+//这个方法会尝试去寻找没有连接的Pad，必要的时候会请求新的Pad
+
+//Parameters
+//(1) src : GstElement - 包含 source pad
+//(2) dest ：GstElement - 包含 dest pad
+//(3) filter : the GstCaps to filter the link, or NULL for no filter.
+
+//Returns
+//gboolean : TRUE if the pads could be linked, FALSE otherwise.
+```
+
 ## gst_element_get_request_pad()
 
 ```
@@ -272,9 +292,6 @@ gst_element_get_compatible_pad (GstElement *element,
 //日常使用
 //pad = gst_element_get_compatible_pad (mux, tolink_pad, NULL);
 ```
-
-
-
 
 ## gst_element_link ()
 
@@ -507,4 +524,71 @@ gboolean
 gst_caps_is_fixed (const GstCaps *caps);
 //判断 GstCaps 是否为固定的(即只含有一个structure，并且在struture中的每一条只描述一个类型)
 //非固定类型的为 GST_TYPE_INT_RANGE 或 GST_TYPE_LIST
+//Parameters
+//(1) the GstCaps to test
+//Return
+// ture = 固定； false = 非固定
+```
+
+
+## gst_caps_new_simple ()
+
+```
+GstCaps *
+gst_caps_new_simple (const char *media_type,
+                     const char *fieldname,
+                     ...);
+//顾名思义，用一种简单的方式创建caps
+//创建一个GstCaps(包含Pad的能力)，它包含一个GstStructure的结构体。
+//这个 GstStructure 的格式和用 gst_structure_new()创建的一致。
+//调用者有必要释放这个GstCaps
+
+//Parameters
+//(1)media_type : 媒体类型
+//(2)fieldname :
+//...
+//(...)NULL
+//Return
+//创建成功返回GstCaps*， 失败返回NULL
+
+//一个例子
+
+caps = gst_caps_new_simple ("video/x-raw",
+        "format", G_TYPE_STRING, "I420",
+        "width", G_TYPE_INT, 384,
+        "height", G_TYPE_INT, 288,
+        "framerate", GST_TYPE_FRACTION, 25, 1,
+        NULL);
+```
+
+## gst_caps_new_full()
+
+```
+GstCaps *
+gst_caps_new_full (GstStructure *struct1,
+                   ...);
+//配合gst_structure_new()创建过滤器
+
+//Parameters
+//(1) struct1 ： 过滤器的属性
+//(..)
+//(NULL)
+
+//Return
+// success -> GstCaps*, 否则返回NULL
+
+//一个例子
+
+caps = gst_caps_new_full (
+    gst_structure_new ("video/x-raw",
+           "width", G_TYPE_INT, 384,
+           "height", G_TYPE_INT, 288,
+           "framerate", GST_TYPE_FRACTION, 25, 1,
+           NULL),
+    gst_structure_new ("video/x-bayer",
+           "width", G_TYPE_INT, 384,
+           "height", G_TYPE_INT, 288,
+           "framerate", GST_TYPE_FRACTION, 25, 1,
+           NULL),
+    NULL);
 ```
