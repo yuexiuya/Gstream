@@ -293,6 +293,37 @@ gst_element_get_compatible_pad (GstElement *element,
 //pad = gst_element_get_compatible_pad (mux, tolink_pad, NULL);
 ```
 
+## gst_element_get_static_pad ()
+
+```
+GstPad *
+gst_element_get_static_pad (GstElement *element,
+                            const gchar *name);
+//根据 element 的 name 检索一个 已经存在的 pad。
+
+//Parameters
+//(1) element : 元素
+//(2) name ： 名字
+
+//Rerturn
+//如果有返回GstPad，否则返回NULL
+```
+
+## gst_ghost_pad_new ()
+
+```
+GstPad *
+gst_ghost_pad_new (const gchar *name,
+                   GstPad *target);
+
+//Parameters
+//(1) name : name of new pad; or null to assign to a default name
+//(2) target : ghost pad 需要连接的 pad
+//Rerturn
+// a new GstPad, errror Return error !
+```
+
+
 ## gst_element_link ()
 
 ```
@@ -383,9 +414,22 @@ GObject
 
                 ->GstPipeline
 
+## gst_bin_new ()
+
+```
+GstElement *
+gst_bin_new (const gchar *name);
+//用给定 name 创建一个 容器(实际也是元素)
+
+//Parameters
+//(1) name : the name of the new bin.
+
+//Return
+//a new GstBin.
+```
+
 
 ## gst_bin_add ()
-
 
 ```
 gboolean
@@ -397,6 +441,14 @@ gst_bin_add (GstBin *bin,
 //(2)element : 子组件
 //Returns
 //true -> 添加成功； false -> 添加失败
+
+//一个例子
+
+// create element, add to bin
+sink = gst_element_factory_make ("fakesink", "sink");
+bin = gst_bin_new ("mybin");
+gst_bin_add (GST_BIN (bin), sink);
+
 ```
 
 ## gst_bin_add_many ()
@@ -410,6 +462,8 @@ gst_bin_add_many (GstBin *bin,
 //NULL-terminated 这个文档中出现了这个词组，我觉得有必要熟记这个词。->空终止字符串（计算机术语），说明这个列表的结尾，必须已NULL为结尾。可能是告知api这个list结束了吧
 //gst_bin_add_many (GST_BIN (pipeline), source, filter, sink, NULL);
 ```
+
+
 # 五、GstPipeline
 
 ## gst_pipeline_new ()
@@ -592,3 +646,6 @@ caps = gst_caps_new_full (
            NULL),
     NULL);
 ```
+
+
+## 十、 Event

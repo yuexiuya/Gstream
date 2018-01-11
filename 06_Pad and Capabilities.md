@@ -389,4 +389,46 @@ link_elements_with_filter (GstElement *element1, GstElement *element2)
 ```
 
 
-### 2.2 Capabilities 的作用
+### 2.3 Ghost pads
+
+幽灵衬垫。
+
+之前我们一直在讨论 pads of element，但是有没有一种可能 element 中没有 pads ？？？ 假设此时我们创建了 element1， element2，并将他们放入一个 bin 中，那么 bin 还会把 pad 暴露给我们吗？显然这是不可能的。这便是 Ghost pads的意义！！！
+
+![image](https://github.com/yuexiuya/Gstream/blob/master/image/GhostPadA.png?raw=true)
+
+当有了 Ghost Pads ， 我们的 bin 就有了一个暴露给外部的 pad。对于外部来说， element1 的 pad 现在也是 Bin 的 pad 了。
+
+![image](https://github.com/yuexiuya/Gstream/blob/master/image/GstPadB.png?raw=true)
+
+下面我们来演示一下，如何创建 Ghost Pad。
+
+- gst_ghost_pad_new ()
+
+```
+#include <gst/gst.h>
+
+int
+main (int   argc,
+      char *argv[])
+{
+  GstElement *bin, *sink;
+  GstPad *pad;
+
+  /* init */
+  gst_init (&argc, &argv);
+
+  /* create element, add to bin */
+  sink = gst_element_factory_make ("fakesink", "sink");
+  bin = gst_bin_new ("mybin");
+  gst_bin_add (GST_BIN (bin), sink);
+
+  /* add ghostpad */
+  pad = gst_element_get_static_pad (sink, "sink");
+  gst_element_add_pad (bin, gst_ghost_pad_new ("sink", pad));
+  gst_object_unref (GST_OBJECT (pad));
+
+[..]
+
+}
+```
