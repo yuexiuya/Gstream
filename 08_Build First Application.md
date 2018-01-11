@@ -4,6 +4,7 @@
 - 使用 gst_element_factory_make() 创建元素并链接起来
 - 使用 GMainLoop 来管理和处理事件
 - 使用 GstBus 监听总线上信息的变化
+- 其中最重要的一点就是pad (sometimes)的应用，注意 on_pad_added 这一块
 
 
 ```
@@ -155,3 +156,6 @@ main (int   argc,
 
 
 ```
+
+
+![Image](https://github.com/yuexiuya/Gstream/blob/master/image/GstDemo.png?raw=true)
