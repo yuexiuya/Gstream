@@ -397,7 +397,70 @@ typedef enum {
 } GstStateChangeReturn;
 ```
 
+## gst_element_query_position ()
 
+```
+gboolean
+gst_element_query_position (GstElement *element,
+                            GstFormat format,
+                            gint64 *cur);
+
+//查询stream的位置信息，纳秒级的。
+//Parameters
+//(1) element : 需要查询时间的元素(一般是顶层元素)
+//(2) GstFormat ： 输出格式
+//(3) cur : 查询的时间
+//Rerturn
+//TRUE if the query could be performed.
+```
+
+```
+/**
+ * GstFormat:
+ * @GST_FORMAT_UNDEFINED: undefined format
+ * @GST_FORMAT_DEFAULT: the default format of the pad/element. This can be
+ *    samples for raw audio, frames/fields for raw video (some, but not all,
+ *    elements support this; use @GST_FORMAT_TIME if you don't have a good
+ *    reason to query for samples/frames)
+ * @GST_FORMAT_BYTES: bytes
+ * @GST_FORMAT_TIME: time in nanoseconds
+ * @GST_FORMAT_BUFFERS: buffers (few, if any, elements implement this as of
+ *     May 2009)
+ * @GST_FORMAT_PERCENT: percentage of stream (few, if any, elements implement
+ *     this as of May 2009)
+ *
+ * Standard predefined formats
+ */
+/* NOTE: don't forget to update the table in gstformat.c when changing
+ * this enum */
+typedef enum {
+  GST_FORMAT_UNDEFINED  =  0, /* must be first in list */
+  GST_FORMAT_DEFAULT    =  1,
+  GST_FORMAT_BYTES      =  2,
+  GST_FORMAT_TIME       =  3,
+  GST_FORMAT_BUFFERS    =  4,
+  GST_FORMAT_PERCENT    =  5
+} GstFormat;
+```
+
+## gst_element_query_duration ()
+
+```
+gboolean
+gst_element_query_duration (GstElement *element,
+                            GstFormat format,
+                            gint64 *duration);
+//查询stream的长度信息，纳秒级的。
+//如果在播放的过程中， duration 改变了，我们可以从 bus 上得到一条DURATION_CHANGED 的信息
+//Parameters
+//(1) element : 需要查询时间的元素(一般是顶层元素)
+//(2) format ： 输出格式
+//(3) duration : 保存 查询的长度
+
+//Return
+// TRUE if the query could be performed.
+
+```
 
 # 四、GstBin
 
@@ -649,3 +712,38 @@ caps = gst_caps_new_full (
 
 
 ## 十、 Event
+
+# gst_event_new_seek ()
+
+```
+GstEvent *
+gst_event_new_seek (gdouble rate,
+                    GstFormat format,
+                    GstSeekFlags flags,
+                    GstSeekType start_type,
+                    gint64 start,
+                    GstSeekType stop_type,
+                    gint64 stop);
+//用给定的参数分配一个新的 Seek 事件。
+//Seek Event 包含一个 playback， 以给定的速率反复的从 start -> stop
+//1.0的速率意味着正常的回放速率，2.0意味着双倍速度。负值意味着向后播放。不允许使用0.0的速率，而应该通过暂停管道来完成。
+//管道有一个默认的播放段，配置为起始位置为0，停止位置为-1，速率为1.0。当前配置的回放段可以用 GST_QUERY_SEGMENT 查询。
+//start_type和stop_type指定如何在回放段中调整当前配置的启动和停止字段。可以对最后配置的值进行相对或绝对的调整。类型的GST_SEEK_TYPE_NONE意味着该位置不应该被更新。
+//当速率为正并且开始被更新时，重放将从新配置的开始位置开始。
+//对于负速率，重放将从新配置的停止位置(如果有的话)开始。如果停止位置更新，则它必须与-1 (GST_CLOCK_TIME_NONE)不同，以得到负值。
+//不可能找到与当前播放位置相关的内容，这样做，暂停管道，使用GST_QUERY_POSITION查询当前播放位置，并使用GST_SEEK_TYPE_SET更新播放段当前位置，以达到所需的位置。
+
+//Parameters
+//(1) element : 需要 seek 的元素
+//(2) rate : 快进速率
+//(3) flags : 具体参照 GstSeekType， 常规使用 GST_SEEK_FLAG_FLUSH
+//(4) start_type : The type and flags for the new start position
+//(5) start : The value of the new start position
+//(6) stop_type : The type and flags for the new stop position
+//(7) stop : The value of the new stop position
+
+//参数太多，实际应用中注意下面这几个参数就可以
+gst_element_seek (pipeline, 1.0, GST_FORMAT_TIME, GST_SEEK_FLAG_FLUSH,
+                           GST_SEEK_TYPE_SET, 60 * GST_MSECOND*1000,
+                           GST_SEEK_TYPE_NONE, GST_CLOCK_TIME_NONE)
+```
