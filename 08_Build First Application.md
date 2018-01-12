@@ -159,3 +159,5 @@ main (int   argc,
 
 
 ![Image](https://github.com/yuexiuya/Gstream/blob/master/image/GstDemo.png?raw=true)
+
+我们在ogg-demuxer 和 vorbis-decoder之间通过一个pad(sometimes)连接，我们的例子向我们讲述了如何利用 ogg-demuxer 去动态创建一个pad。
