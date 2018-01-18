@@ -747,3 +747,46 @@ gst_element_seek (pipeline, 1.0, GST_FORMAT_TIME, GST_SEEK_FLAG_FLUSH,
                            GST_SEEK_TYPE_SET, 60 * GST_MSECOND*1000,
                            GST_SEEK_TYPE_NONE, GST_CLOCK_TIME_NONE)
 ```
+
+## gst_uri_is_valid ()
+
+```
+gboolean
+gst_uri_is_valid (const gchar *uri);
+//检测 uri 是否可用的，尝试着使用了一下%的路径，是可以检测通过的。估计这个API的检测和网络uri有关。
+//Parameters
+//(1) uri : a uri
+//Return
+//gboolean : 如果可用返回true； 不可用 返回false
+```
+
+## gst_filename_to_uri ()
+
+```
+gchar *
+gst_filename_to_uri (const gchar *filename,
+                     GError **error);
+//与g_filename_to_uri()类似，但也尝试处理相对的文件路径。在将filename转换为URI之前，如果它是相对路径，它将被当前工作目录前缀，然后路径将被规范化，这样它就不包含任何内容。/”或“. ./ '段。
+//Parameters
+//(1) filename : 绝对路径 或者 文件名
+//(2) error ： 错误码
+//Returns
+//gchar * ： a uri 字符串； 或者 NULL on error。必须使用 g_free() 释放。
+```
+
+
+## gst_parese_launch ()
+
+```
+GstElement *
+gst_parse_launch (const gchar *pipeline_description,
+                  GError **error);
+//创建一个基于命令行语法的新管道。请注意，即使设置了错误，您可能会得到一个非NULL的返回值。
+
+//Parameters
+//(1) pipeline_description : 用来描述管道的属性(基于命令行的形式)
+//(2) error : 设置失败时返回的错误码
+
+//Returns
+// GstElement* : 管道
+```
