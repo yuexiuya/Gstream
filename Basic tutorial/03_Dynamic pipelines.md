@@ -16,3 +16,5 @@
 如果一个 container 中嵌入 multiple streams (如 one video and two audio tracks, for exmaple), demuxers 将会分离它到不同的输出通道去。在这种方式中，管道中将创建不同的分支去处理不同类型的 data。
 
 Element 中的输入输出口叫做 GstPad。如 source elements 只有 source pads，只负责输出；sink elements 只有 sink pads，只负责接受； 而 filter elements 两者都有。
+
+![image](https://github.com/yuexiuya/Gstream/blob/master/image/Basic_tutorial3.png?raw=true)
