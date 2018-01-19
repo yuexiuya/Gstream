@@ -324,6 +324,37 @@ gst_ghost_pad_new (const gchar *name,
 ```
 
 
+## gst_pad_is_linked ()
+
+```
+gboolean		gst_pad_is_linked			(GstPad *pad);
+//检测 pad 是否已经连接
+//Parameters
+//(1)pad : GstPadLinkReturn
+//Return
+//gboolean : true = 已经连接； false = 未连接
+```
+
+## gst_pad_query_caps ()
+
+```
+GstCaps *
+gst_pad_query_caps (GstPad *pad,
+                    GstCaps *filter);
+//得到 pad 的能力。
+//注意：
+//(1)此方法并不能确保返回由 gst_event_new_caps()设置的caps；请使用gst_pad_get_current_caps()。
+//(2)
+//(3)此方法返回的GstCaps不可写。如果想要修改，请先使用gst_caps_make_writable().
+
+//Parameters
+//(1)pad : a GstPad (获得该 pad 的 caps)
+//(2)filter ： suggested GstCaps, or NULL.
+//Return
+//GstCaps : the caps
+```
+
+
 ## gst_element_link ()
 
 ```
@@ -729,6 +760,24 @@ caps = gst_caps_new_full (
            "framerate", GST_TYPE_FRACTION, 25, 1,
            NULL),
     NULL);
+```
+
+## gst_caps_get_structure ()
+
+```
+GstStructure *
+gst_caps_get_structure (const GstCaps *caps,
+                        guint index);
+//从 Caps 中 得到一条 GStructure
+//警告：
+//(1) caps 是 const，GstStructure * 是 non-const. 这是为了编程的方便。调用者必须明白 GstCaps 中 structures 不可以轻易被更改。但是，如果你知道caps 是可写的 (你 copy 过他们，或者使用过 gst_caps_make_writable()).
+//(2) 你可以更改 GstStructure* 通过这种方式： gst_structure_set().
+//(3) 你并不是需要 free 或者 unref 这个 structure，它属于 GstCaps。
+
+//(1) caps : a GstCaps
+//(2) index : index of the structure (一个GstCaps中可能含有多个GstStruture)
+Returns
+//a pointer to the GstStructure corresponding to index . 
 ```
 
 

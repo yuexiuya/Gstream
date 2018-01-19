@@ -211,4 +211,52 @@ static void pad_added_handler (GstElement *src, GstPad *new_pad, CustomData *dat
 g_signal_connect (data.source, "pad-added", G_CALLBACK (pad_added_handler), &data);
 ```
 
-这里监听的是 uridecodebin 元素 的 signal pad-added , 我们使用 gst-inspect-1.0 uridecodebin
+这里监听的是 uridecodebin 元素 的 signal pad-added , 我们使用 gst-inspect-1.0 uridecodebin 查看一下元素属性
+
+![image](https://github.com/yuexiuya/Gstream/blob/master/image/Basic_turoial3_3.png?raw=true)
+
+我们会发现，针对"pad-added" 这个属性，他推荐我们使用
+
+```
+void user_function (GstElement* object,
+                                    GstPad* arg0,
+                                    gpointer user_data);
+```
+
+因此，我们在使用 g_signal_connect 时，多关注一下信号。
+
+
+3. GST_PAD_NAME & GST_ELEMENT_NAME
+
+获取 PAD 和 ELEMENT 的 name
+
+```
+  g_print ("Received new pad '%s' from '%s':\n", GST_PAD_NAME (new_pad), GST_ELEMENT_NAME (src));
+```
+
+
+4. Capabilities 的获取
+
+```
+/* Check the new pad's type */
+new_pad_caps = gst_pad_query_caps (new_pad, NULL);
+new_pad_struct = gst_caps_get_structure (new_pad_caps, 0);
+new_pad_type = gst_structure_get_name (new_pad_struct);
+g_print("======>>> %s \n",new_pad_type);
+```
+
+一个查询 oggdemux 的例子
+
+```
+GstElement* mtest;
+GstPad* mpad = NULL;
+GstCaps* mcaps = NULL;
+GstStructure* mstruct = NULL;
+const gchar *mtype = NULL;
+mtest = gst_element_factory_make ("oggdemux", "odemux");
+mpad = gst_element_get_static_pad (mtest, "sink");
+mcaps = gst_pad_query_caps (mpad, NULL);
+mstruct = gst_caps_get_structure(mcaps, 1);
+mtype = gst_structure_get_name(mstruct);
+g_print("=====>%s \n",mtype);
+```
