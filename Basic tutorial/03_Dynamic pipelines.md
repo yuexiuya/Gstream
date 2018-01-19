@@ -258,5 +258,4 @@ mpad = gst_element_get_static_pad (mtest, "sink");
 mcaps = gst_pad_query_caps (mpad, NULL);
 mstruct = gst_caps_get_structure(mcaps, 1);
 mtype = gst_structure_get_name(mstruct);
-g_print("=====>%s \n",mtype);
 ```
