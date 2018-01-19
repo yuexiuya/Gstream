@@ -615,6 +615,27 @@ gst_bus_add_watch (GstBus *bus,
 
 ```
 
+## gst_bus_timed_pop_filtered ()
+
+```
+GstMessage *
+gst_bus_timed_pop_filtered (GstBus *bus,
+                            GstClockTime timeout,
+                            GstMessageType types);
+//从总线中获取信息，等待指定的超时(并丢弃任何与掩码不匹配的消息)。
+//如果超时为0，则该函数的行为就像gst_bus_pop_filter()。
+//如果超时是GST_CLOCK_TIME_NONE，此函数将永远阻塞，直到总线上发布匹配的消息。
+
+//Parameters
+//(1) bus : 总线
+//(2) timeout : 超时
+//(3) types ：消息类型
+
+//Returns
+//GstMessage * : 如果总线上没有找到匹配的消息返回NULL，否则在总线上找到与该过滤器匹配的GstMessage，直到超时过期。
+//该消息是从总线中提取的，需要在使用后对gst_message_unref()进行未处理。
+```
+
 # 八、GstPluginfeature
   GstPlugin的基本类
 
