@@ -777,7 +777,7 @@ gst_caps_get_structure (const GstCaps *caps,
 //(1) caps : a GstCaps
 //(2) index : index of the structure (一个GstCaps中可能含有多个GstStruture)
 Returns
-//a pointer to the GstStructure corresponding to index . 
+//a pointer to the GstStructure corresponding to index .
 ```
 
 
@@ -816,6 +816,28 @@ gst_event_new_seek (gdouble rate,
 gst_element_seek (pipeline, 1.0, GST_FORMAT_TIME, GST_SEEK_FLAG_FLUSH,
                            GST_SEEK_TYPE_SET, 60 * GST_MSECOND*1000,
                            GST_SEEK_TYPE_NONE, GST_CLOCK_TIME_NONE)
+```
+
+## gst_element_seek_simple ()
+
+```
+gboolean
+gst_element_seek_simple (GstElement *element,
+                         GstFormat format,
+                         GstSeekFlags seek_flags,
+                         gint64 seek_pos);
+//最简单的seek API，意味着 seek 到 seek_pos。如果想要更复杂的操作，如播放速率，相对移动，请参考 gst_element_seek().
+//当 pipeline 的状态为 preolled PAUSED or PLAYING ，seeking 会起效果(除非是live stream)
+//一些 elements 也许在 READY 状态下 seeking，在这种场景下，他保存 seek event 并且 execute 它。
+
+//Parameters
+//(1) element : a GstElement to seek on
+//(2) format : a GstFormat to execute the seek in, such as GST_FORMAT_TIME
+//(3) seek_flags : seek options; playback applications will usually want to use GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_KEY_UNIT here
+//(4) seek_pos : position to seek to (relative to the start); if you are doing a seek in GST_FORMAT_TIME this value is in nanoseconds
+//multiply with GST_SECOND to convert seconds to nanoseconds or with GST_MSECOND to convert milliseconds to nanoseconds.
+//Returns
+//TRUE if the seek operation succeeded. Flushing seeks will trigger a preroll, which will emit GST_MESSAGE_ASYNC_DONE.
 ```
 
 ## gst_uri_is_valid ()
@@ -859,4 +881,17 @@ gst_parse_launch (const gchar *pipeline_description,
 
 //Returns
 // GstElement* : 管道
+```
+
+
+## gst_query_new_seeking ()
+
+```
+GstQuery *
+gst_query_new_seeking (GstFormat format);
+//创建一个 GstQuery，便于查询 stream 的 seeking 属性；
+//Parameters
+//(1)format: GstFormat
+//Returns
+//GstQuery * :
 ```
