@@ -587,6 +587,16 @@ gst_pipeline_get_bus (GstPipeline *pipeline);
 
 # 六、GstElementFactory
 
+## gst_element_factory_get_longname
+
+```
+//it is a macro
+//用于获得 GstElementFactory 的名字
+gst_element_factory_get_longname(GstElementFactory *)
+//因为这是一个宏定义，常常这里只用于输出打印的字符串
+    g_print ("Pad Templates for %s:\n", gst_element_factory_get_longname (factory));
+```
+
 ## gst_element_factory_make ()
 
 ```
@@ -628,6 +638,43 @@ gst_element_factory_find (const gchar *name);
 //搜索到返回 GstElementFactory ， 没有查询到返回 NULL
 ```
 
+## gst_element_factory_get_num_pad_templates ()
+
+```
+guint
+gst_element_factory_get_num_pad_templates
+                               (GstElementFactory *factory);
+//得到 factory 中的 pad_templates 的数量
+
+//Parameters
+//(1) factory : ptr -> GstElementFactory
+//Returns
+//guint : pad_templates 的数量
+```
+
+## gst_element_factory_get_static_pad_templates ()
+
+```
+const GList *
+gst_element_factory_get_static_pad_templates
+                               (GstElementFactory *factory);
+//得到 GstElementFactory* 中所有的 static pad template，并存储在 GList* 的容器中
+
+//Parameters
+//(1)factory : 元素工厂
+//Return
+//包含 static pad template 的 GList 容器
+```
+
+
+```
+struct _GstStaticPadTemplate {
+  const gchar     *name_template; // pad template 的名字
+  GstPadDirection  direction;    // pad的方向
+  GstPadPresence   presence;     // pad的存在属性(always,Sometimes, request)
+  GstStaticCaps    static_caps;  // Caps of pad
+};
+```
 # 七、GstBus
 
 异步消息总线
@@ -700,6 +747,28 @@ gst_caps_is_fixed (const GstCaps *caps);
 ```
 
 
+## gst_caps_is_any
+
+```
+gboolean
+gst_caps_is_any (const GstCaps *caps);
+//caps 是否代表任意的音频格式
+//Parameters
+//(1) caps : the GstCaps to test
+//Returns
+```
+
+## gst_caps_is_empty
+
+```
+gboolean
+gst_caps_is_any (const GstCaps *caps);
+//caps 是否代表 空的音频格式
+//Parameters
+//(1) caps : the GstCaps to test
+//Returns
+```
+
 ## gst_caps_new_simple ()
 
 ```
@@ -762,6 +831,20 @@ caps = gst_caps_new_full (
     NULL);
 ```
 
+## gst_caps_get_size ()
+
+```
+guint
+gst_caps_get_size (const GstCaps *caps);
+//返回 GstCaps 中存储的 structures 的数量
+
+//Parameters
+//(1) caps : a GstCaps
+//Returns
+//the number of structures that caps contains
+
+```
+
 ## gst_caps_get_structure ()
 
 ```
@@ -780,6 +863,18 @@ Returns
 //a pointer to the GstStructure corresponding to index .
 ```
 
+## gst_structure_get_name
+
+```
+const gchar *
+gst_structure_get_name (const GstStructure *structure);
+//获得 structure 的名字
+
+//Parameters
+//(1) structure : a GstStructure
+//Rerturn
+//gchar * :name of structure
+```
 
 ## 十、 Event
 
@@ -858,7 +953,8 @@ gst_uri_is_valid (const gchar *uri);
 gchar *
 gst_filename_to_uri (const gchar *filename,
                      GError **error);
-//与g_filename_to_uri()类似，但也尝试处理相对的文件路径。在将filename转换为URI之前，如果它是相对路径，它将被当前工作目录前缀，然后路径将被规范化，这样它就不包含任何内容。/”或“. ./ '段。
+//与g_filename_to_uri()类似，但也尝试处理相对的文件路径。
+//在将filename转换为URI之前，如果它是相对路径，它将被当前工作目录前缀，然后路径将被规范化，这样它就不包含任何内容。/”或“. ./ '段。
 //Parameters
 //(1) filename : 绝对路径 或者 文件名
 //(2) error ： 错误码
