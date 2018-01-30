@@ -56,7 +56,7 @@ source pads 产生 buffers， sink pads 消耗 buffers。buffers 会在 element 
 #define CHUNK_SIZE 1024   /* Amount of bytes we are sending in each buffer */
 #define SAMPLE_RATE 44100 /* Samples per second we are sending */
 
-/* Structure to contain all our information, so we can pass it to callbacks */
+/* Structure to contain all  our information, so we can pass it to callbacks */
 typedef struct _CustomData {
   GstElement *pipeline, *app_source, *tee, *audio_queue, *audio_convert1, *audio_resample, *audio_sink;
   GstElement *video_queue, *audio_convert2, *visual, *video_convert, *video_sink;

@@ -30,6 +30,7 @@ GST_DEBUG 等级一共分为 8 个等级
 
 另外我们可以为某个特定的元素定制他的 GST_DEBUG 等级
 
+
 - audiotestsrc 调试等级 = 6， 其他都是 2
 ```
 GST_DEBUG=2,audiotestsrc:6
@@ -51,6 +52,13 @@ GST_DEBUG=5 gst-launch-1.0 playbin uri=file:///home/joshua/music/mayday.mp4
 
 ```
 GST_DEBUG_NO_COLOR=1 GST_DEBUG_FILE=/home/joshua/music/gst.log GST_DEBUG=5 gst-launch-1.0 playbin uri=file:///home/joshua/music/mayday.mp4
+```
+
+- 查看内部元素的生成
+
+```
+gst-launch-1.0 --gst-debug=2,GST_ELEMENT_FACTORY:4 playbin uri=file:///home/joshua/music/mayday.mp4
+
 ```
 
 ## 2.2 日志解析
