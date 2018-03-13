@@ -587,6 +587,16 @@ gst_pipeline_get_bus (GstPipeline *pipeline);
 
 # 六、GstElementFactory
 
+## gst_element_factory_get_longname
+
+```
+//it is a macro
+//用于获得 GstElementFactory 的名字
+gst_element_factory_get_longname(GstElementFactory *)
+//因为这是一个宏定义，常常这里只用于输出打印的字符串
+    g_print ("Pad Templates for %s:\n", gst_element_factory_get_longname (factory));
+```
+
 ## gst_element_factory_make ()
 
 ```
@@ -628,6 +638,43 @@ gst_element_factory_find (const gchar *name);
 //搜索到返回 GstElementFactory ， 没有查询到返回 NULL
 ```
 
+## gst_element_factory_get_num_pad_templates ()
+
+```
+guint
+gst_element_factory_get_num_pad_templates
+                               (GstElementFactory *factory);
+//得到 factory 中的 pad_templates 的数量
+
+//Parameters
+//(1) factory : ptr -> GstElementFactory
+//Returns
+//guint : pad_templates 的数量
+```
+
+## gst_element_factory_get_static_pad_templates ()
+
+```
+const GList *
+gst_element_factory_get_static_pad_templates
+                               (GstElementFactory *factory);
+//得到 GstElementFactory* 中所有的 static pad template，并存储在 GList* 的容器中
+
+//Parameters
+//(1)factory : 元素工厂
+//Return
+//包含 static pad template 的 GList 容器
+```
+
+
+```
+struct _GstStaticPadTemplate {
+  const gchar     *name_template; // pad template 的名字
+  GstPadDirection  direction;    // pad的方向
+  GstPadPresence   presence;     // pad的存在属性(always,Sometimes, request)
+  GstStaticCaps    static_caps;  // Caps of pad
+};
+```
 # 七、GstBus
 
 异步消息总线
@@ -700,6 +747,28 @@ gst_caps_is_fixed (const GstCaps *caps);
 ```
 
 
+## gst_caps_is_any
+
+```
+gboolean
+gst_caps_is_any (const GstCaps *caps);
+//caps 是否代表任意的音频格式
+//Parameters
+//(1) caps : the GstCaps to test
+//Returns
+```
+
+## gst_caps_is_empty
+
+```
+gboolean
+gst_caps_is_any (const GstCaps *caps);
+//caps 是否代表 空的音频格式
+//Parameters
+//(1) caps : the GstCaps to test
+//Returns
+```
+
 ## gst_caps_new_simple ()
 
 ```
@@ -762,6 +831,20 @@ caps = gst_caps_new_full (
     NULL);
 ```
 
+## gst_caps_get_size ()
+
+```
+guint
+gst_caps_get_size (const GstCaps *caps);
+//返回 GstCaps 中存储的 structures 的数量
+
+//Parameters
+//(1) caps : a GstCaps
+//Returns
+//the number of structures that caps contains
+
+```
+
 ## gst_caps_get_structure ()
 
 ```
@@ -780,6 +863,18 @@ Returns
 //a pointer to the GstStructure corresponding to index .
 ```
 
+## gst_structure_get_name
+
+```
+const gchar *
+gst_structure_get_name (const GstStructure *structure);
+//获得 structure 的名字
+
+//Parameters
+//(1) structure : a GstStructure
+//Rerturn
+//gchar * :name of structure
+```
 
 ## 十、 Event
 
@@ -858,7 +953,8 @@ gst_uri_is_valid (const gchar *uri);
 gchar *
 gst_filename_to_uri (const gchar *filename,
                      GError **error);
-//与g_filename_to_uri()类似，但也尝试处理相对的文件路径。在将filename转换为URI之前，如果它是相对路径，它将被当前工作目录前缀，然后路径将被规范化，这样它就不包含任何内容。/”或“. ./ '段。
+//与g_filename_to_uri()类似，但也尝试处理相对的文件路径。
+//在将filename转换为URI之前，如果它是相对路径，它将被当前工作目录前缀，然后路径将被规范化，这样它就不包含任何内容。/”或“. ./ '段。
 //Parameters
 //(1) filename : 绝对路径 或者 文件名
 //(2) error ： 错误码
@@ -896,6 +992,7 @@ gst_query_new_seeking (GstFormat format);
 //GstQuery * :
 ```
 
+<<<<<<< HEAD
 ## gst_query_parse_seeking ()
 
 ```
@@ -927,4 +1024,213 @@ if (!GST_CLOCK_TIME_IS_VALID (data.duration)) {
     g_printerr ("Could not query current duration.\n");
   }
 }
+=======
+
+## gst_registry_get()
+
+```
+GstRegistry *
+gst_registry_get (void);
+//生成检索单例 plugin 注册表，这个调用者不会拥有注册表的指针，这个注册表的生命周期和GStreamer自身管理
+
+//Return
+//GstRegistry * : 注册表
+```
+
+## gst_registry_find_feature ()
+
+```
+GstPluginFeature *
+gst_registry_find_feature (GstRegistry *registry,
+                           const gchar *name,
+                           GType type);
+//通过 name 和 type 找到 pluginfeature
+//Parameters
+//(1)registry ：注册表
+//(2)name ：
+//(3)type :
+//Returns
+//GstPluginFeature ->
+
+```
+
+## gst_plugin_feature_set_rank ()
+
+```
+void
+gst_plugin_feature_set_rank (GstPluginFeature *feature,
+                             guint rank);
+//为插件特性指定一个级别，以便自动跟踪使用最合适的特性。
+//Parameter
+//(1)feature :
+//(2)rank : 优先级
+
+static void enable_factory (const gchar *name, gboolean enable) {
+    GstRegistry *registry = NULL;
+    GstElementFactory *factory = NULL;
+
+    registry = gst_registry_get_default ();
+    if (!registry) return;
+
+    factory = gst_element_factory_find (name);
+    if (!factory) return;
+
+    if (enable) {
+        gst_plugin_feature_set_rank (GST_PLUGIN_FEATURE (factory), GST_RANK_PRIMARY + 1);
+    }
+    else {
+        gst_plugin_feature_set_rank (GST_PLUGIN_FEATURE (factory), GST_RANK_NONE);
+    }
+
+    gst_registry_add_feature (registry, GST_PLUGIN_FEATURE (factory));
+    return;
+}
+
+```
+
+# GstBuffer
+
+1. Object Hierarchy
+Object --> GstBuffer
+
+2. includes
+```
+#include <gst/gst.h>
+```
+
+3. Description
+
+Buffers 是 GStreamer 中数据传输的基本单元。它们包含时间和偏移量，以及与 GstMemory blocks 相关的二进制 metadata。
+
+我们使用 gst_buffer_new() 创建一个 buffers。下面的示例创建了一个缓冲区，它可以使用给定的宽度、高度和每个平面的比特来保存给定的视频帧。
+
+```
+GstBuffer *buffer;
+GstMemory *memory;
+gint size, width, height, bpp;
+...
+size = width * height * bpp;
+buffer = gst_buffer_new ();
+memory = gst_allocator_alloc (NULL, size, NULL);
+gst_buffer_insert_memory (buffer, -1, memory);
+...
+```
+
+使用上面这个步骤可能有些繁琐，可以直接使用 gst_buffer_new_allocate() 去创建一个 给定大小 的 buffer。
+
+在 Buffer 中包含一系列的 GstMemory 对象。可以使用 gst_buffer_n_memory() 查询对象的个数， 可以使用 gst_buffer_peek_memory() 去获取内存的指针。
+
+Buffer 通常具有时间戳和持续时间，但它们都不能保证(它们可以设置为GST_CLOCK_TIME_NONE)。只要有一个有意义的值，就应该设置它们。时间戳和持续时间以纳秒为单位(它们是GstClockTime值) -- 不太理解
+
+缓冲区 DTS 是指当缓冲区被解码时，通常是单调递增的时间戳。缓冲 PTS 是指当缓冲内容呈现给用户时的时间戳，并且不总是单调递增。-- DTS 总时长，PTS 当前播放位置
+
+Buffer 也可以有一个或两个开始和结束偏移。这些都是媒体类型特定的。对于视频缓冲区，起始偏移量通常是帧数。对于音频缓冲区，它将是到目前为止所产生的样本数量。对于压缩数据，它可以是源文件或目标文件中的字节偏移量。同样，结束偏移将是缓冲区结束的偏移量。如果您知道缓冲区的媒体类型(前面的CAPS事件)，那么它们只能被有意义地解释。可以将两者都设置为GST_BUFFER_OFFSET_NONE。 -- 不太理解
+
+使用gst_buffer_ref()来增加缓冲区的refcount。当您想要在将一个句柄推到下一个元素之后，就必须这样做。缓冲区refcount确定缓冲区的可写性，当refcount恰好为1时，缓冲区是可写的，即当调用者仅引用缓冲区时。
+
+为了有效地从现有的缓冲区中创建一个较小的缓冲区，您可以使用gst_buffer_copy_region()。该方法尝试在两个缓冲区之间共享内存对象。
+## gst_buffer_new ()
+
+```
+GstBuffer *
+gst_buffer_new (void);
+//创建一个空的 buffer
+// MT safe
+
+//Return
+//the new GstBuffer.
+```
+
+## gst_allocator_alloc ()
+
+```
+GstMemory *
+gst_allocator_alloc (GstAllocator *allocator,
+                     gsize size,
+                     GstAllocationParams *params);
+//分配一个至少为 size 大小的内存块
+//可选的params可以指定内存的前缀和填充，params = NULL 时什么也不指定；如果 flags 包含GST_MEMORY_FLAG_ZERO_PREFIXED和gst_memory_flag_zero_padd，则前缀/填充将填满0
+//当 allocator 为空时，将使用默认的分配器。
+
+//Parameters
+//(1) allocator : 分配器
+//(2) size : 最小的大小
+//(3)params : flags
+
+//Returns
+//GstMemory * : a new GstMemory
+```
+
+## gst_buffer_insert_memory ()
+
+```
+void
+gst_buffer_insert_memory (GstBuffer *buffer,
+                          gint idx,
+                          GstMemory *mem);
+//插入 mem 到 buffer 中的 idx 位置，该函数获取了 mem 的所有权，因此不会增加它的引用计数
+//只能将gst_buffer_get_max_memory()添加到缓冲区中。如果添加了更多的内存，将自动合并现有的内存块，为新内存腾出空间 - 不懂它在说啥
+
+//Parameters
+//(1) buffer : a GstBuffer
+//(2) id : the index to add the memory at, or -1 to append it to the end
+//(3) mem : a GstMemory
+```
+
+## gst_buffer_new_allocate()
+
+```
+GstBuffer *
+gst_buffer_new_allocate (GstAllocator *allocator,
+                         gsize size,
+                         GstAllocationParams *params);
+//类似于 gst_buffer_new && gst_allocator_alloc
+//尝试使用给定大小的数据和分配器的额外参数创建一个新分配的 buffer 。如果无法分配请求的内存数量，则返回NULL。分配的缓冲区内存没有清除
+//请注意，当size == 0时，缓冲区将没有与之关联的内存。
+
+//Parameter
+//(1) allocator : 分配器
+//(2) size : the size in bytes of the new buffer's data.
+//(3) params : optional Parameters
+
+//Return
+// a new GstBuffer or null
+```
+
+## gst_buffer_n_memory ()
+
+```
+guint
+gst_buffer_n_memory (GstBuffer *buffer);
+//获取该缓冲区所拥有的内存块的数量。这个值永远不会大于gst_buffer_get_max_memory()返回的值
+//Parameters
+//(1) buffer : a GstBuffer.
+//Return
+//guint : the number of memory blocks this buffer is made of.
+```
+
+## gst_buffer_peek_memory ()
+
+```
+GstMemory *
+gst_buffer_peek_memory (GstBuffer *buffer,
+                        guint idx);
+//获得 buffer 中 idx 位置 的 GstMemory 的指针
+//内存块保持有效，直到缓冲区中的内存块被删除、替换或合并，通常使用任何修改缓冲区中的内存的调用
+//Parameters
+//(1) buffer : a Gstbuffer
+//(2) idx : 索引
+//Returns
+//GstMemory : point -> GstMemory
+```
+
+## gst_buffer_copy_region ()
+
+```
+GstBuffer *
+gst_buffer_copy_region (GstBuffer *parent,
+                        GstBufferCopyFlags flags,
+                        gsize offset,
+                        gsize size);
+>>>>>>> 43de55d33bbcf3aca7fe0256282bc2bc5ff4d76e
 ```
