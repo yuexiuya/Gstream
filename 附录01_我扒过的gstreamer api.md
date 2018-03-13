@@ -895,3 +895,36 @@ gst_query_new_seeking (GstFormat format);
 //Returns
 //GstQuery * :
 ```
+
+## gst_query_parse_seeking ()
+
+```
+void
+gst_query_parse_seeking (GstQuery *query,
+                         GstFormat *format,
+                         gboolean *seekable,
+                         gint64 *segment_start,
+                         gint64 *segment_end);
+//解析 seeking 操做，将解析到的属性存放在 后面的容器里面
+// 大多数时候，貌似用这个查询是否 可以 进行 seek ！！！
+
+//Parameters
+//(1) query : 创建的 query for seek
+//(2) format : 指定的格式
+//(3) seekable ： 能否进行 seek 操做
+//(4) segment_start : 暂时不明
+//(5) segment_end : 暂时不明
+
+```
+
+## GST_CLOCK_TIME_IS_VALID
+
+检查当前时间是否有效
+
+```
+if (!GST_CLOCK_TIME_IS_VALID (data.duration)) {
+  if (!gst_element_query_duration (data.playbin, GST_FORMAT_TIME, &data.duration)) {
+    g_printerr ("Could not query current duration.\n");
+  }
+}
+```
